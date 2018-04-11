@@ -1,6 +1,5 @@
 /*
-// what we work with 
-// 480
+// 485
 */
 
 function createStore(reducer, initialState) {
@@ -52,38 +51,45 @@ const initialState = { messages: [] };
 
 const store = createStore(reducer, initialState);
 
-const listener = () => {
-  console.log('Current state: ');
-  console.log(store.getState());
-};
+class App extends React.Component{
+  componentDidMount(){
+    store.subscribe(() => this.forceUpdate());
+  }
 
-store.subscribe(listener);
+  render(){
+    const messages = store.getState().messages;
 
-const addMessageAction1 = {
-  type: 'ADD_MESSAGE',
-  message: 'How do you read?',
-};
+    return(
+      <div className='ui segment'>
+        <MessageView messages={messages}/>
+        <MessageInput />
+      </div>
+    )
+  }
+}
 
-// store instantiated on L53. this goes to reducer() 
-// which adds action.message to its const messages and equalizes it to let state. 
-// then it subscribes listener
-store.dispatch(addMessageAction1);
-    // -> `listener()` is called
+class MessageInput extends React.Component{
+  state ={
+    value:"",
+  };
 
-const addMessageAction2 = {
-  type: 'ADD_MESSAGE',
-  message: 'I read you loud and clear, Houston.',
-};
+  onChange = (e) => {
+    this.setState({
+      value: e.target.value,
+    })
+  };
 
-store.dispatch(addMessageAction2);
-    // -> `listener()` is called
-
-const deleteMessageAction = {
-  type: 'DELETE_MESSAGE',
-  index: 0,
-};
-store.dispatch(deleteMessageAction);
-    // -> `listener()` is called
+  handleSubmit = () => {
+    store.dispatch({
+      type: "ADD_Message",
+      message: this.state.value,
+    });
+    // resets value in onChange(e);
+    this.setState({
+      value: "",
+    });
+  };
+}
 
 const App = { createStore, reducer, initialState }; // for tests
 export default App;

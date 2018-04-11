@@ -1,6 +1,7 @@
 /*
 // 485
 */
+import React from "react";
 
 function createStore(reducer, initialState) {
   let state = initialState;
@@ -78,10 +79,10 @@ class MessageInput extends React.Component{
       value: e.target.value,
     })
   };
-
+  // maybe add a delete button for each message?
   handleSubmit = () => {
     store.dispatch({
-      type: "ADD_Message",
+      type: "ADD_MESSAGE",
       message: this.state.value,
     });
     // resets value in onChange(e);
@@ -89,7 +90,55 @@ class MessageInput extends React.Component{
       value: "",
     });
   };
+
+  render(){
+    return(
+      <div className="ui input">
+        <input
+          onChange={this.onChange}
+          value={this.state.value}
+          type="text"
+        />
+        <button
+          onClick={this.handleSubmit}
+          className="ui primary button"
+          type="submit"
+        >
+        Submit
+        </button>
+      </div>
+    )
+  }
 }
 
-const App = { createStore, reducer, initialState }; // for tests
+class MessageView extends React.Component{
+  handleClick = (index) =>{
+    store.dispatch({
+      type: "DELETE_MESSAGE",
+      index: index,
+    });
+  };
+
+  render(){
+    // messages from parent class App
+    const messages = this.props.messages.map((message, index) =>(
+      <div
+        className="comment"
+        key={index}
+        onClick={() => this.handleClick(index)}
+      >
+        {message}
+      </div>
+    
+    ));
+
+    return (
+      <div className="ui comments">
+        {messages}
+      </div>
+    );
+  };
+}
+
+//const App = { createStore, reducer, initialState }; // for tests
 export default App;
